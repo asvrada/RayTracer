@@ -3,3 +3,5 @@ Learning Ray Tracing, so write this simple ray tracer following the steps from F
 
 Progress:
 Can render Spheres using Lambertian and Blinn-Phong Model with reflections
+
+![Demo](out/sample.png)
