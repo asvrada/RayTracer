@@ -88,7 +88,7 @@ vector<Light> lights{Light(vec3(-300, 200, 0)), Light(vec3(500, 400, -200))};
 
 
 vec3 AmbientShading(float intensity, const HitResult &hitResult) {
-    return clamp_color(hitResult.hitObject->ambientColor * intensity);
+    return clamp_color(hitResult.hitObject->color.ambientColor * intensity);
 }
 
 // Lambertian
@@ -97,7 +97,7 @@ vec3 LambertianShading(const Light &light, const HitResult &hitResult) {
 
     float multiply = light.intensity / pow((light.origin - hitResult.hitPoint).length(), 2)
                      * max(0.0f, dot(hitResult.n, directionTowardsLight));
-    return clamp_color(hitResult.hitObject->color * multiply);
+    return clamp_color(hitResult.hitObject->color.baseColor * multiply);
 }
 
 // Blinn-Phong Model
@@ -108,9 +108,9 @@ vec3 BlinnPhongShading(const Light &light, const HitResult &hitResult, const vec
     vec3 h = normalize(directionTowardsView + directionTowardsLight);
 
     float multiply = light.intensity / pow((light.origin - hitResult.hitPoint).length(), 2)
-                     * pow(max(0.0f, dot(hitResult.n, h)), hitResult.hitObject->P);
+                     * pow(max(0.0f, dot(hitResult.n, h)), hitResult.hitObject->color.P);
 
-    return clamp_color(hitResult.hitObject->specularColor * multiply);
+    return clamp_color(hitResult.hitObject->color.specularColor * multiply);
 }
 
 Ray computeReflectionRay(vec3 direction, vec3 normal, vec3 hitPoint) {
@@ -181,9 +181,9 @@ int main() {
     // Sphere
     Sphere bottomWall(vec3(0, -100000130, 0), 100000000);
     Sphere sphere1(vec3(-100, 0, 400), 100);
-    sphere1.color = vec3(180, 128, 128);
-    sphere1.specularColor = vec3(50);
-    sphere1.P = 80;
+    sphere1.color.baseColor = vec3(180, 128, 128);
+    sphere1.color.specularColor = vec3(50);
+    sphere1.color.P = 80;
 
     objects.push_back(make_shared<Sphere>(sphere1));
     sphere1.center.x = 100;

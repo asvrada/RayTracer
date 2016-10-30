@@ -16,10 +16,11 @@ public:
     float R;
 
     Sphere(glm::vec3 center, float R) : center(center), R(R) {
-        color = glm::vec3(128, 128, 128);
-        specularColor = glm::vec3(100, 100, 100);
-        ambientColor = glm::vec3(20, 20, 20);
-        P = 10;
+        color.P = 10;
+
+        color.baseColor = glm::vec3(128, 128, 128);
+        color.specularColor = glm::vec3(100, 100, 100);
+        color.ambientColor = glm::vec3(20, 20, 20);
     }
 
     HitResult hit(const Ray &ray) override {
