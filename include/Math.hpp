@@ -22,6 +22,10 @@ glm::vec3 clamp_color(const glm::vec3 value) {
     return clamp(value, 0, 255);
 }
 
+float dot(glm::vec3 a, glm::vec3 b) {
+    return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+
 class Surface;
 
 /*

@@ -20,7 +20,6 @@
 using namespace std;
 
 using glm::vec3;
-using glm::dot;
 
 class Camera {
 public:

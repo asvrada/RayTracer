@@ -24,9 +24,9 @@ public:
     }
 
     HitResult hit(const Ray &ray) override {
-        double A = glm::dot(ray.direction, ray.direction);
-        double B = glm::dot(ray.direction * 2.0f, ray.origin - center);
-        double C = glm::dot(ray.origin - center, ray.origin - center) - R * R;
+        double A = dot(ray.direction, ray.direction);
+        double B = dot(ray.direction * 2.0f, ray.origin - center);
+        double C = dot(ray.origin - center, ray.origin - center) - R * R;
 
         HitResult hitResult;
         double sqrtPart = B * B - 4 * A * C;
