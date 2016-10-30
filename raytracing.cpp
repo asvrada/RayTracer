@@ -147,24 +147,24 @@ vec3 Trace(const Ray &primeRay, int DEPTH) {
     }
 
     // normal way
+    // accumulate light
     vec3 color = AmbientShading(1, hitResult);
-    for (auto light : lights) {
-        bool inShadow = false;
 
+    // calculate lighting effects for each light
+    for (auto light : lights) {
         vec3 tmp_direction = normalize(light.origin - hitResult.hitPoint);
         Ray shadowRay(hitResult.hitPoint + tmp_direction * 0.1f, tmp_direction);
+
+        // Loop every object to see if they block out the light
         for (auto each:objects) {
             auto result = each->hit(shadowRay);
+            // is in shadow, skip the color part
             if (result.isHit && result.t > 0) {
-                inShadow = true;
-                break;
+                continue;
             }
         }
 
-        if (inShadow) {
-            continue;
-        }
-
+        // only do this when not in shadow
         color += LambertianShading(light, hitResult) + BlinnPhongShading(light, hitResult, primeRay.origin);
     }
 
