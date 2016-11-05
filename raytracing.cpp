@@ -14,12 +14,14 @@
 #include "include/Math.hpp"
 
 
+#define LIGHT_INTENSITY_MULTIPLIER 2000
 #define MAX_DEPTH 3
 #define BG_COLOR vec3(0, 0, 0)
 
 using namespace std;
 
 using glm::vec3;
+using glm::length;
 
 class Camera {
 public:
@@ -94,8 +96,8 @@ vec3 AmbientShading(float intensity, const HitResult &hitResult) {
 vec3 LambertianShading(const Light &light, const HitResult &hitResult) {
     vec3 directionTowardsLight = normalize(light.origin - hitResult.hitPoint);
 
-    float multiply = light.intensity / pow((light.origin - hitResult.hitPoint).length(), 2)
-                     * max(0.0f, dot(hitResult.n, directionTowardsLight));
+    float multiply = (float)(LIGHT_INTENSITY_MULTIPLIER * light.intensity / pow(length(light.origin - hitResult.hitPoint), 2)
+                     * max(0.0f, dot(hitResult.n, directionTowardsLight)));
     return clamp_color(hitResult.hitObject->color.baseColor * multiply);
 }
 
@@ -106,8 +108,8 @@ vec3 BlinnPhongShading(const Light &light, const HitResult &hitResult, const vec
 
     vec3 h = normalize(directionTowardsView + directionTowardsLight);
 
-    float multiply = light.intensity / pow((light.origin - hitResult.hitPoint).length(), 2)
-                     * pow(max(0.0f, dot(hitResult.n, h)), hitResult.hitObject->color.P);
+    float multiply = (float)(LIGHT_INTENSITY_MULTIPLIER * light.intensity / pow(length(light.origin - hitResult.hitPoint), 2)
+                     * pow(max(0.0f, dot(hitResult.n, h)), hitResult.hitObject->color.P));
 
     return clamp_color(hitResult.hitObject->color.specularColor * multiply);
 }
@@ -207,3 +209,7 @@ int main() {
     png.write("out/sample.png");
     return 0;
 }
+
+//int main() {
+//    cout << glm::length(vec3(10, 0, 0) - vec3(1, 0, 0)) << endl;
+//}

@@ -34,7 +34,7 @@ public:
         if (sqrtPart < 0) {
             hitResult.isHit = false;
             return hitResult;
-        };
+        }
 
         sqrtPart = sqrt(sqrtPart);
 

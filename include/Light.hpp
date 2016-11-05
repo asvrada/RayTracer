@@ -13,7 +13,7 @@ public:
     glm::vec3 color;
     float intensity;
 
-    Light() : intensity(8) {}
+    Light() : intensity(100) {}
 
     Light(glm::vec3 origin) : Light() {
         this->origin = origin;
