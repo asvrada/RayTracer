@@ -85,7 +85,7 @@ public:
 //Objects
 vector<shared_ptr<Surface>> objects;
 // Light
-vector<Light> lights{Light(vec3(-300, 200, 0)), Light(vec3(500, 400, -200))};
+vector<Light> lights{Light(vec3(-300, 200, 0))};
 
 
 vec3 AmbientShading(float intensity, const HitResult &hitResult) {
@@ -184,7 +184,7 @@ int main() {
     Sphere sphere1(vec3(-100, 0, 400), 100);
     sphere1.color.baseColor = vec3(180, 128, 128);
     sphere1.color.specularColor = vec3(50);
-    sphere1.color.P = 80;
+    sphere1.color.P = 20;
 
     objects.push_back(make_shared<Sphere>(sphere1));
     sphere1.center.x = 100;

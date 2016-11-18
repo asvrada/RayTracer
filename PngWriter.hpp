@@ -6,7 +6,7 @@
 // 
 // This class can write a png image using libpng routines (i.e. png.h).
 //
-// Sampler usage:
+// Sample usage:
 //
 //    PngWriter png(nx,ny);
 //
@@ -43,33 +43,38 @@
 // THE SOFTWARE.
 // ======================================================================
 
-#include <string>
-using std::string;
-
 #include <png.h>
+#include <iostream>
+#include <string>
 
 class PngWriter {
+
 private:
+
     unsigned char (*buffer)[3]; // 0 <= r,g,b < 255
     int nx, ny;
 
 public:
+
     PngWriter(const int width, const int height) {
+
         nx = width;
         ny = height;
         buffer = new unsigned char[nx * ny][3];
 
         // fill buffer with a "nice" cyan [73,175,205] -- eventually a designer should choose this ;)
         for (int i = 0; i < nx * ny; ++i) {
-            buffer[i][0] = 0;
-            buffer[i][1] = 0;
-            buffer[i][2] = 0;
+            buffer[i][0] = 73;
+            buffer[i][1] = 175;
+            buffer[i][2] = 205;
         }
 
     }
 
     ~PngWriter() {
+
         delete[] buffer;
+
     }
 
     void set(const int i, const int j, const unsigned char r, const unsigned char g, const unsigned char b) {
@@ -80,9 +85,11 @@ public:
         buffer[(ny - j - 1) * nx + i][2] = b;
     }
 
-    void write(const char* filename) {
+    void write(const std::string &filename) {
+
         // note: we completely skip any error handling treatment here for simplicity.
-        FILE *fp = fopen(filename, "wb");
+
+        FILE *fp = fopen(filename.data(), "wb");
         if (!fp) {
             std::cout << "Warning: could not open png file: " << filename << std::endl;
             return;
@@ -122,7 +129,7 @@ public:
 
         // set up row pointers to point into the raw image data in buffer...
 
-        png_byte *row_pointers[ny];
+        png_byte **row_pointers = new png_byte *[ny];
         for (int i = 0; i < ny; ++i)
             row_pointers[i] = (png_byte *) (buffer + i * nx);
 
@@ -132,10 +139,12 @@ public:
 
         png_destroy_write_struct(&png_ptr, &info_ptr);
 
+        delete[] row_pointers;
         fclose(fp);
 
         // leave the image data in buffer to allow the calling process to change it and/or
         // write another image. It is deleted in the destructor.
+
     }
 
 };

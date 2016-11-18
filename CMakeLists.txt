@@ -13,6 +13,6 @@ set(LIBS /usr/local/lib/)
 include_directories(${INCLUDES_SYSTEM} ${INCLUDES_GLM})
 link_directories(${LIBS})
 
-set(SOURCE_FILES ${INCLUDES_PROJ} PngWriter.hpp raytracing.cpp include/Color.hpp)
+set(SOURCE_FILES ${INCLUDES_PROJ} PngWriter.hpp raytracing.cpp)
 add_executable(RayTracing ${SOURCE_FILES})
 target_link_libraries(RayTracing png)
