@@ -14,8 +14,8 @@
 #include "include/Math.hpp"
 
 
-#define LIGHT_INTENSITY_MULTIPLIER 2000
-#define MAX_DEPTH 3
+#define LIGHT_INTENSITY_MULTIPLIER 600
+#define MAX_DEPTH 4
 #define BG_COLOR vec3(0, 0, 0)
 
 using namespace std;
@@ -85,7 +85,7 @@ public:
 //Objects
 vector<shared_ptr<Surface>> objects;
 // Light
-vector<Light> lights{Light(vec3(-300, 200, 0))};
+vector<Light> lights{Light(vec3(0, 0, -200))};
 
 
 vec3 AmbientShading(float intensity, const HitResult &hitResult) {
@@ -96,8 +96,9 @@ vec3 AmbientShading(float intensity, const HitResult &hitResult) {
 vec3 LambertianShading(const Light &light, const HitResult &hitResult) {
     vec3 directionTowardsLight = normalize(light.origin - hitResult.hitPoint);
 
-    float multiply = (float)(LIGHT_INTENSITY_MULTIPLIER * light.intensity / pow(length(light.origin - hitResult.hitPoint), 2)
-                     * max(0.0f, dot(hitResult.n, directionTowardsLight)));
+    float multiply = (float) (LIGHT_INTENSITY_MULTIPLIER * light.intensity /
+                              pow(length(light.origin - hitResult.hitPoint), 2)
+                              * max(0.0f, dot(hitResult.n, directionTowardsLight)));
     return clamp_color(hitResult.hitObject->color.baseColor * multiply);
 }
 
@@ -108,8 +109,9 @@ vec3 BlinnPhongShading(const Light &light, const HitResult &hitResult, const vec
 
     vec3 h = normalize(directionTowardsView + directionTowardsLight);
 
-    float multiply = (float)(LIGHT_INTENSITY_MULTIPLIER * light.intensity / pow(length(light.origin - hitResult.hitPoint), 2)
-                     * pow(max(0.0f, dot(hitResult.n, h)), hitResult.hitObject->color.P));
+    float multiply = (float) (LIGHT_INTENSITY_MULTIPLIER * light.intensity /
+                              pow(length(light.origin - hitResult.hitPoint), 2)
+                              * pow(max(0.0f, dot(hitResult.n, h)), hitResult.hitObject->color.P));
 
     return clamp_color(hitResult.hitObject->color.specularColor * multiply);
 }
@@ -180,17 +182,29 @@ int main() {
     Camera camera(WIDTH, HEIGHT);
 
     // Sphere
-    Sphere bottomWall(vec3(0, -100000130, 0), 100000000);
-    Sphere sphere1(vec3(-100, 0, 400), 100);
-    sphere1.color.baseColor = vec3(180, 128, 128);
-    sphere1.color.specularColor = vec3(50);
-    sphere1.color.P = 20;
+//    Sphere bottomWall(vec3(0, -100000130, 0), 100000000);
+//    Sphere sphere1(vec3(-100, 0, 400), 100);
+//    sphere1.color.baseColor = vec3(180, 128, 128);
+//    sphere1.color.specularColor = vec3(50);
+//    sphere1.color.P = 20;
+//
+//    objects.push_back(make_shared<Sphere>(sphere1));
+//    sphere1.center.x = 100;
+//    sphere1.center.z = 550;
+//    objects.push_back(make_shared<Sphere>(sphere1));
+//    objects.push_back(make_shared<Sphere>(bottomWall));
 
-    objects.push_back(make_shared<Sphere>(sphere1));
-    sphere1.center.x = 100;
-    sphere1.center.z = 550;
-    objects.push_back(make_shared<Sphere>(sphere1));
-    objects.push_back(make_shared<Sphere>(bottomWall));
+    vector<Sphere> list{
+            Sphere(vec3(10, 10, 50), 10),
+            Sphere(vec3(-10, 10, 50), 10),
+            Sphere(vec3(10, -10, 50), 10),
+            Sphere(vec3(-10, -10, 50), 10),
+    };
+
+    for (auto each: list) {
+        objects.push_back(make_shared<Sphere>(each));
+    }
+
 
     PngWriter png(WIDTH, HEIGHT);
 
@@ -209,7 +223,3 @@ int main() {
     png.write("out/sample.png");
     return 0;
 }
-
-//int main() {
-//    cout << glm::length(vec3(10, 0, 0) - vec3(1, 0, 0)) << endl;
-//}
