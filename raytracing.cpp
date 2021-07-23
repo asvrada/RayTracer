@@ -2,7 +2,6 @@
 // Created by WuZiJie on 23/10/2016.
 //
 
-#include <iostream>
 #include <memory>
 #include <vector>
 #include "include/Sphere.hpp"
@@ -40,6 +39,13 @@ private:
 public:
     Camera() : u(vec3(1, 0, 0)), v(vec3(0, 1, 0)), w(vec3(0, 0, -1)) {
         d = 300.0f;
+        l = 0;
+        r = 0;
+        t = 0;
+        b = 0;
+        origin = {0, 0, 0};
+        height = 800;
+        width = 600;
     }
 
     Camera(int width, int height) : Camera() {
@@ -55,7 +61,7 @@ public:
         this->width = width;
         this->height = height;
 
-        d = width / 2;
+        d = (float) width / 2;
         l = -width / 2;
         r = -l;
         t = height / 2;
@@ -71,10 +77,10 @@ public:
      * @return vector3 pointing from origin to the point(i, j)
      */
     Ray generateRay(int i, int j) {
-        float u = (float) (l + (r - l) * (i + 0.5) / width);
-        float v = (float) (b + (t - b) * (j + 0.5) / height);
+        auto u = (float) (l + (r - l) * (i + 0.5) / width);
+        auto v = (float) (b + (t - b) * (j + 0.5) / height);
 
-        return Ray(origin, this->w * -d + this->u * u + this->v * v);
+        return {origin, this->w * -d + this->u * u + this->v * v};
     }
 };
 
@@ -85,7 +91,7 @@ public:
 //Objects
 vector<shared_ptr<Surface>> objects;
 // Light
-vector<Light> lights{Light(vec3(0, 0, -200))};
+vector<Light> lights {Light(vec3(0, 0, -200))};
 
 
 vec3 AmbientShading(float intensity, const HitResult &hitResult) {
@@ -119,7 +125,7 @@ vec3 BlinnPhongShading(const Light &light, const HitResult &hitResult, const vec
 Ray computeReflectionRay(vec3 direction, vec3 normal, vec3 hitPoint) {
     vec3 r = normalize(direction - normal * dot(direction, normal) * 2.0f);
 
-    return Ray(hitPoint + r * 0.1f, r);
+    return {hitPoint + r * 0.1f, r};
 }
 
 vec3 Trace(const Ray &primeRay, int DEPTH) {
@@ -127,7 +133,7 @@ vec3 Trace(const Ray &primeRay, int DEPTH) {
     hitResult.t = std::numeric_limits<float>::max();
 
     // Find hit
-    for (auto each:objects) {
+    for (const auto &each:objects) {
         HitResult result = each->hit(primeRay);
         if (result.isHit) {
             // closer to camera
@@ -155,12 +161,12 @@ vec3 Trace(const Ray &primeRay, int DEPTH) {
     vec3 color = AmbientShading(1, hitResult);
 
     // calculate lighting effects for each light
-    for (auto light : lights) {
+    for (const auto &light: lights) {
         vec3 tmp_direction = normalize(light.origin - hitResult.hitPoint);
         Ray shadowRay(hitResult.hitPoint + tmp_direction * 0.1f, tmp_direction);
 
         // Loop every object to see if they block out the light
-        for (auto each:objects) {
+        for (const auto &each:objects) {
             auto result = each->hit(shadowRay);
             // is in shadow, skip the color part
             if (result.isHit && result.t > 0) {
@@ -181,30 +187,29 @@ int main() {
     // Camera
     Camera camera(WIDTH, HEIGHT);
 
-    // Sphere
-//    Sphere bottomWall(vec3(0, -100000130, 0), 100000000);
-//    Sphere sphere1(vec3(-100, 0, 400), 100);
-//    sphere1.color.baseColor = vec3(180, 128, 128);
-//    sphere1.color.specularColor = vec3(50);
-//    sphere1.color.P = 20;
-//
-//    objects.push_back(make_shared<Sphere>(sphere1));
-//    sphere1.center.x = 100;
-//    sphere1.center.z = 550;
-//    objects.push_back(make_shared<Sphere>(sphere1));
-//    objects.push_back(make_shared<Sphere>(bottomWall));
+//     Sphere
+    Sphere bottomWall(vec3(0, -100000130, 0), 100000000);
+    objects.push_back(make_shared<Sphere>(bottomWall));
 
-    vector<Sphere> list{
-            Sphere(vec3(10, 10, 50), 10),
-            Sphere(vec3(-10, 10, 50), 10),
-            Sphere(vec3(10, -10, 50), 10),
-            Sphere(vec3(-10, -10, 50), 10),
+    Sphere sphere1(vec3(-100, 0, 400), 100);
+    sphere1.color.baseColor = vec3(180, 128, 128);
+    sphere1.color.specularColor = vec3(50);
+    sphere1.color.P = 20;
+    objects.push_back(make_shared<Sphere>(sphere1));
+    sphere1.center.x = 100;
+    sphere1.center.z = 550;
+    objects.push_back(make_shared<Sphere>(sphere1));
+
+    vector<Sphere> list {
+        Sphere(vec3(10, 10, 50), 10),
+        Sphere(vec3(-10, 10, 50), 10),
+        Sphere(vec3(10, -10, 50), 10),
+        Sphere(vec3(-10, -10, 50), 10),
     };
 
-    for (auto each: list) {
+    for (const auto &each: list) {
         objects.push_back(make_shared<Sphere>(each));
     }
-
 
     PngWriter png(WIDTH, HEIGHT);
 
